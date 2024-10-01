@@ -7,9 +7,11 @@ import { AppDispatch } from '../app/store';
 const TaskList: React.FC<{ setTaskToEdit: (task?: { id: number; title: string; description: string; completed: boolean }) => void }> = ({ setTaskToEdit }) => {
     const tasks = useSelector((state: RootState) => state.tasks.tasks);
     const dispatch = useDispatch<AppDispatch>();
+    console.log(tasks);
+
 
     return (
-        <div className="mt-4 bg-secondary p-4 ">
+        <div className="mt-4 p-4 ">
             <h2>Task List</h2>
             <ul className="list-group ">
                 {Array.isArray(tasks) && tasks.length > 0 ? (

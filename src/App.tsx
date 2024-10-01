@@ -14,7 +14,7 @@ const App: React.FC = () => {
   }, [dispatch]);
   
     return (
-        <div className="container mt-5 bg-secondary rounded-sm rounded">
+        <div className="container mt-5 ">
             <TaskForm taskToEdit={taskToEdit} setTaskToEdit={setTaskToEdit} />
             <TaskList setTaskToEdit={setTaskToEdit} />
         </div>
