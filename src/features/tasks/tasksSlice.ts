@@ -48,12 +48,9 @@ export const addTask = createAsyncThunk(
   "tasks/addTask",
   async (task: Omit<Task, "id"> & { id: number }, { rejectWithValue }) => {
     try {
-      const response = await axios.post<ApiResponse>(API_URL, task);
+      const response = await axios.post<ApiResponse>(API_URL, task.id);
       console.log("Response from addTask:", response.data);
-      if (response.data.results && response.data.results.length > 0) {
-        return { ...task };
-      }
-      throw new Error("No task returned");
+      return { ...task };
     } catch (error) {
       console.error("Error adding task:", error);
       return rejectWithValue(error);

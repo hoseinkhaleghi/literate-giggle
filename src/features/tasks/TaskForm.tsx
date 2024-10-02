@@ -45,18 +45,18 @@ const TaskForm: React.FC<TaskFormProps> = ({ taskToEdit, setTaskToEdit }) => {
       {
         const addResult = await dispatch(
           addTask({
+            id: maxId,
             title: task.title,
             description: task.description,
             completed: task.completed,
-            id: maxId,
           })
         );
         if (addTask.fulfilled.match(addResult)) {
           console.log("Task to be added:", {
+            id: maxId,
             title: task.title,
             description: task.description,
             completed: task.completed,
-            id: maxId,
           });
           console.log("Task added successfully");
         } else {
