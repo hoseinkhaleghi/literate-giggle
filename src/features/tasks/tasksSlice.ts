@@ -44,19 +44,28 @@ export const fetchMaxTaskId = createAsyncThunk(
     return maxId + 1;
   }
 );
-
 export const addTask = createAsyncThunk(
-    "tasks/addTask",
-    async (task: Omit<Task, "id"> & { id: number }) => {
-      const response = await axios.post<Task>(API_URL, task);
-      return { ...task, id: response.data.id };
+  "tasks/addTask",
+  async (task: Omit<Task, "id"> & { id: number }, { rejectWithValue }) => {
+    try {
+      const response = await axios.post<ApiResponse>(API_URL, task);
+      console.log("Response from addTask:", response.data);
+      if (response.data.results && response.data.results.length > 0) {
+        return { ...task };
+      }
+      throw new Error("No task returned");
+    } catch (error) {
+      console.error("Error adding task:", error);
+      return rejectWithValue(error);
     }
-  );
-  
+  }
+);
+
 export const updateTask = createAsyncThunk(
   "tasks/updateTask",
   async ({ id, task }: { id: number; task: Omit<Task, "id"> }) => {
     const response = await axios.put<Task>(`${API_URL}/${id}`, task);
+    console.log("Task updated:", response.data);
     return response.data;
   }
 );

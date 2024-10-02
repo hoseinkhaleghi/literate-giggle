@@ -8,7 +8,7 @@ import { AppDispatch } from './app/store';
 const App: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>(); 
     const [taskToEdit, setTaskToEdit] = useState<undefined | { id: number; title: string; description: string; completed: boolean }>(undefined);
-
+    
     useEffect(() => {
       dispatch(fetchTasks());
   }, [dispatch]);

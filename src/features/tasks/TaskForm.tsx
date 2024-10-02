@@ -12,7 +12,9 @@ interface TaskFormProps {
     completed: boolean;
   };
   setTaskToEdit: (
-    task: undefined | { id: number; title: string; description: string; completed: boolean }
+    task:
+      | undefined
+      | { id: number; title: string; description: string; completed: boolean }
   ) => void;
 }
 
@@ -23,7 +25,8 @@ const TaskForm: React.FC<TaskFormProps> = ({ taskToEdit, setTaskToEdit }) => {
     completed: false,
   });
   const dispatch = useDispatch<AppDispatch>();
-  const maxTaskId = useSelector((state: RootState) => state.tasks.maxTaskId);
+  const tasks = useSelector((state: RootState) => state.tasks.tasks);
+  const maxId = Math.max(...tasks.map((task) => task.id)) + 1;
 
   useEffect(() => {
     if (taskToEdit) {
@@ -33,28 +36,44 @@ const TaskForm: React.FC<TaskFormProps> = ({ taskToEdit, setTaskToEdit }) => {
     }
   }, [taskToEdit, dispatch]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (taskToEdit) {
-      dispatch(updateTask({ id: taskToEdit.id, task }));
+      await dispatch(updateTask({ id: taskToEdit.id, task }));
     } else {
-      if (maxTaskId !== null) {
-        dispatch(
+      {
+        const addResult = await dispatch(
           addTask({
             title: task.title,
             description: task.description,
             completed: task.completed,
-            id: maxTaskId,
+            id: maxId,
           })
         );
+        if (addTask.fulfilled.match(addResult)) {
+          console.log("Task to be added:", {
+            title: task.title,
+            description: task.description,
+            completed: task.completed,
+            id: maxId,
+          });
+          console.log("Task added successfully");
+        } else {
+          console.error("Failed to add task:", addResult.error);
+        }
       }
     }
+
     setTask({ title: "", description: "", completed: false });
     setTaskToEdit(undefined);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mt-4 w-full p-4 bg-secondary rounded-sm rounded">
+    <form
+      onSubmit={handleSubmit}
+      className="mt-4 w-full p-4 bg-secondary rounded"
+    >
       <h1 className="text-center">Task Management App</h1>
       <h2>{taskToEdit ? "Edit Task" : "Add Task"}</h2>
       <div className="mb-3">
@@ -85,9 +104,13 @@ const TaskForm: React.FC<TaskFormProps> = ({ taskToEdit, setTaskToEdit }) => {
           className="form-check-input"
           id="completedCheck"
         />
-        <label className="form-check-label" htmlFor="completedCheck">Completed</label>
+        <label className="form-check-label" htmlFor="completedCheck">
+          Completed
+        </label>
       </div>
-      <button type="submit" className="btn btn-primary">{taskToEdit ? "Update Task" : "Add Task"}</button>
+      <button type="submit" className="btn btn-primary">
+        {taskToEdit ? "Update Task" : "Add Task"}
+      </button>
     </form>
   );
 };
